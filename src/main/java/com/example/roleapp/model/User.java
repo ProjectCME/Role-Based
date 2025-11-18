@@ -1,0 +1,1 @@
+// Class that represent db tables.

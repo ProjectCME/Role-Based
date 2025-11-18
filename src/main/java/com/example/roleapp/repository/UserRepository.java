@@ -1,0 +1,1 @@
+// Interfaces file to access db using spring boot.
