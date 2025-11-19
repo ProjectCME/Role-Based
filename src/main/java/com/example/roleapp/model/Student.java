@@ -1,6 +1,6 @@
 package com.example.roleapp.model;
 import jakarta.persistence.*;
-import com.example.demo.model.User;
+import com.example.roleapp.model.User;
 @Entity
 @Table(name = "student")
 

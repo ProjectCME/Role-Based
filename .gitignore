@@ -1,0 +1,4 @@
+# no need of compiled files like class files and env files
+target/
+*.class
+.env
