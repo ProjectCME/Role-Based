@@ -12,5 +12,7 @@ public class Subject {
     private String subjectName;
 
     private Integer semester;
+    
+    private Integer academicYear;
 }
 

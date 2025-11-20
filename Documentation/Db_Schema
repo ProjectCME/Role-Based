@@ -46,3 +46,8 @@ purpose (REGISTRATION / LOGIN / PASSWORD_RESET)
 expiry_time
 status (PENDING / VERIFIED / EXPIRED)
 created_at
+
+SUBJECT 
+subject_name
+semester
+academic_year
