@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>View Users</title>
+    <link rel="stylesheet" href="/css/admin.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>VIEW USERS</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <!-- Loop Through All Active Users -->
+          <tr th:each="u : ${users}">
+            <td th:text="${u.name}"></td>
+            <td th:text="${u.email}"></td>
+            <td th:text="${u.role}"></td>
+            <td th:text="${u.status} ? 'Active' : 'Inactive'"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>User Approval</title>
+    <link rel="stylesheet" href="/css/admin.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>USER APPROVAL ACTION</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <!-- Loop over DTO list -->
+          <tr th:each="u : ${users}">
+            <td th:text="${u.name}"></td>
+            <td th:text="${u.email}"></td>
+            <td th:text="${u.role}"></td>
+            <td th:text="${u.status} ? 'Active' : 'Inactive'"></td>
+
+            <td>
+              <!-- Approve -->
+              <form
+                th:action="@{'/admin/approve/' + ${u.id}}"
+                method="post"
+                style="display: inline"
+              >
+                <button class="action-btn btn-approve">✓</button>
+              </form>
+
+              <!-- Soft Delete -->
+              <form
+                th:action="@{'/admin/delete/' + ${u.id}}"
+                method="post"
+                style="display: inline"
+              >
+                <button class="action-btn btn-delete">✗</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
