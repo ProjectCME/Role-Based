@@ -6,10 +6,6 @@ name
 email (unique)
 role (ADMIN / TEACHER / STUDENT)
 is_status (boolean)
-SUBJECT
-id (PK)
-subject_name
-semester
 
 STUDENT
 id (PK)
