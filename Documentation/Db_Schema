@@ -2,35 +2,26 @@ DB Schema
 
 USER
 id (PK)
+unique_id
 name
 email (unique)
 role (ADMIN / TEACHER / STUDENT)
 is_status (boolean)
 
-STUDENT
-id (PK)
-user_id (FK → USER.id)
-roll_no
-
-
-TEACHER
-id (PK)
-user_id (FK → USER.id)
-
 
 TEACHER_SUBJECT
 id (PK)
-teacher_id (FK → TEACHER.id)
+teacher_id (FK → User.unique_id)
 subject_id (FK → SUBJECT.id)
 
 
 MARKS
 id (PK)
-student_id (FK → STUDENT.id)
+student_id (FK → User.unique_id)
 subject_id (FK → SUBJECT.id)
 exam_type (IA1 / IA2 / IA3/Special)
 marks
-created_by_teacher_id (FK → TEACHER.id)
+created_by_teacher_id (FK → User.unique_id)
 marks_proof_pdf LONGBLOB
 
 

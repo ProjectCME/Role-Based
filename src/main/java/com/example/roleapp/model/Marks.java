@@ -14,7 +14,7 @@ public class Marks {
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+    private User student;
 
     @ManyToOne
     @JoinColumn(name = "subject_id", nullable = false)
@@ -27,9 +27,71 @@ public class Marks {
 
     @ManyToOne
     @JoinColumn(name = "created_by_teacher_id", nullable = false)
-    private Teacher teacher;
+    private User teacher;
 
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] marksProofPdf;
+
+    //Getters
+
+    public Long getId() {
+        return id;
+    }
+
+    public User getStudent() {
+        return student;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public ExamType getExamType() {
+        return examType;
+    }
+
+    public Integer getMarks() {
+        return marks;
+    }
+
+    public byte[] getMarksProofPdf() {
+        return marksProofPdf;
+    }
+
+    public User getTeacher(){
+        return teacher;
+    }
+
+
+    //Setters
+
+
+    public void setExamType(ExamType examType) {
+        this.examType = examType;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setMarks(Integer marks) {
+        this.marks = marks;
+    }
+
+    public void setMarksProofPdf(byte[] marksProofPdf) {
+        this.marksProofPdf = marksProofPdf;
+    }
+
+    public void setStudent(User student) {
+        this.student = student;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public void setTeacher(User teacher) {
+        this.teacher = teacher;
+    }
 }

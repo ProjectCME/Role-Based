@@ -14,6 +14,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true,nullable = false)
+    private Integer uniqueId;
+
     private String name;
 
     @Column(unique = true, nullable = false)
@@ -33,6 +36,10 @@ public class User {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public Integer getUniqueId() {return uniqueId;}
+
+    public void setUniqueId(Integer uniqueId){this.uniqueId=uniqueId}
 
     public String getName() {
         return name;
