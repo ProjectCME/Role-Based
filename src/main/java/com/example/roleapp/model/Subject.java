@@ -14,5 +14,13 @@ public class Subject {
     private Integer semester;
     
     private Integer academicYear;
+
+    public Long getId() {return id;}
+    public String getSubjectName(){return subjectName;}
+    public Integer getSemester(){return semester;}
+    public Integer getAcademicYear(){return academicYear;}
+
+
+
 }
 

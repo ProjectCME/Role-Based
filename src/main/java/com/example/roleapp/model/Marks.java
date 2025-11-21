@@ -32,4 +32,12 @@ public class Marks {
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] marksProofPdf;
+
+    public Subject getSubject() {return subject;}
+    public ExamType getExamType(){return examType;}
+    public Integer getMarks(){return marks;}
+
+    public void setSubject(Subject subject) {this.subject = subject;}
+    public void setExamType(ExamType examType){this.examType=examType;}
+    public void setMarks(Integer marks){this.marks=marks;}
 }
