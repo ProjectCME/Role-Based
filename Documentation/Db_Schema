@@ -6,10 +6,6 @@ name
 email (unique)
 role (ADMIN / TEACHER / STUDENT)
 is_status (boolean)
-SUBJECT
-id (PK)
-subject_name
-semester
 
 STUDENT
 id (PK)
@@ -46,3 +42,8 @@ purpose (REGISTRATION / LOGIN / PASSWORD_RESET)
 expiry_time
 status (PENDING / VERIFIED / EXPIRED)
 created_at
+
+SUBJECT 
+subject_name
+semester
+academic_year
