@@ -1,4 +1,4 @@
-package com.example.roleapp.model;
+package com.example.roleapp.controller;
 
 import com.example.roleapp.dto.MarksRepositoryDto;
 import com.example.roleapp.service.StudentMarksService;

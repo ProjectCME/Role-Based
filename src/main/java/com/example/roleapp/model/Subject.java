@@ -15,11 +15,19 @@ public class Subject {
     
     private Integer academicYear;
 
+
+    //Getters
     public Long getId() {return id;}
     public String getSubjectName(){return subjectName;}
     public Integer getSemester(){return semester;}
     public Integer getAcademicYear(){return academicYear;}
 
+
+    //Setters
+    public void setId(Long id){this.id=id;}
+    public void setSubjectName(String subjectName){this.subjectName=subjectName;}
+    public void setSemester(Integer semester){this.semester=semester;}
+    public void setAcademicYear(Integer academicYear){this.academicYear=academicYear;}
 
 
 }

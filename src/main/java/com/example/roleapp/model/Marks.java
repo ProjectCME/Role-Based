@@ -33,11 +33,20 @@ public class Marks {
     @Column(columnDefinition = "LONGBLOB")
     private byte[] marksProofPdf;
 
+    //Getters
+    public Long getId(){return id;}
+    public Student getStudent(){return student;}
     public Subject getSubject() {return subject;}
     public ExamType getExamType(){return examType;}
     public Integer getMarks(){return marks;}
+    public Teacher getTeacher(){return teacher;}
 
+
+    //Setters
+    public void setId(Long id){this.id=id;}
+    public void setStudent(Student student){this.student=student;}
     public void setSubject(Subject subject) {this.subject = subject;}
     public void setExamType(ExamType examType){this.examType=examType;}
     public void setMarks(Integer marks){this.marks=marks;}
+    public void setTeacher(Teacher teacher){this.teacher=teacher;}
 }

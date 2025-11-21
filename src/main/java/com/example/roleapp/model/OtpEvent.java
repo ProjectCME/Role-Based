@@ -28,4 +28,22 @@ public class OtpEvent {
     private Status status;
 
     private Long createdAt;
+
+    //Getters
+    public Long getId(){return id;}
+    public User getUser(){return user;}
+    public String getOtpCode(){return otpCode;}
+    public Purpose getPurpose(){return purpose;}
+    public Long getExpiryTime(){return expiryTime;}
+    public Status getStatus(){return status;}
+    public Long getCreatedAt(){return createdAt;}
+
+
+    //Setters
+    public void setId(Long setId){this.id=id;}
+    public void setUser(User user){this.user=user;}
+    public void setOtpCode(String otpCode){this.otpCode=otpCode;}
+    public void setPurpose(Purpose purpose){this.purpose=purpose;}
+    public void setStatus(Status status){this.status=status;}
+    public void setCreatedAt(Long createdAt){this.createdAt=createdAt;}
 }

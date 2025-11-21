@@ -12,4 +12,14 @@ public class Teacher {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    //Getters
+    public Long getId(){return id;}
+    public User getUser(){return user;}
+
+    //Setters
+    public void setId(Long id){this.id=id;}
+    public void setUser(User user){this.user=user;}
+
+
 }
