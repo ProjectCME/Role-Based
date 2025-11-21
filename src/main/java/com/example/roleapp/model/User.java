@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 @Table(name = "users")
 public class User {
 
-    public enum Role { ADMIN, TEACHER, STUDENT }
+    public enum Role {
+        ADMIN, TEACHER, STUDENT
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +24,7 @@ public class User {
 
     private boolean isStatus;
 
-    // ============================
-    //        GETTERS & SETTERS
-    // ============================
+    // GETTERS & SETTERS
 
     public Long getId() {
         return id;
