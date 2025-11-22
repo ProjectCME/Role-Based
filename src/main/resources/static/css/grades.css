@@ -1,0 +1,35 @@
+body {
+    font-family: Arial;
+    background: #fafafa;
+}
+
+.container {
+    width: 70%;
+    margin: auto;
+    margin-top: 50px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+table, th, td {
+    border: 1px solid gray;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+}
+
+button {
+    margin-top: 20px;
+    padding: 12px 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}

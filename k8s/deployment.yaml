@@ -6,6 +6,8 @@ metadata:
     app: roleapp
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: roleapp
@@ -19,6 +21,7 @@ spec:
           image: asia-south1-docker.pkg.dev/role-based-478706/roleapp/roleapp:latest
           ports:
             - containerPort: 8080
+
           env:
             - name: DB_URL
               valueFrom:
@@ -35,22 +38,29 @@ spec:
                 secretKeyRef:
                   name: roleapp-db-secret
                   key: DB_PASSWORD
+
           resources:
             requests:
-              cpu: "200m"
+              cpu: "100m"
               memory: "512Mi"
             limits:
               cpu: "500m"
-              memory: "1Gi"
+              memory: "2Gi"
+
           readinessProbe:
             httpGet:
-              path: "/"
+              path: "/actuator/health"
               port: 8080
-            initialDelaySeconds: 20
+            initialDelaySeconds: 90
+            periodSeconds: 15
             timeoutSeconds: 5
+            failureThreshold: 6
+
           livenessProbe:
             httpGet:
-              path: "/"
+              path: "/actuator/health"
               port: 8080
-            initialDelaySeconds: 40
+            initialDelaySeconds: 120
+            periodSeconds: 20
             timeoutSeconds: 5
+            failureThreshold: 6
