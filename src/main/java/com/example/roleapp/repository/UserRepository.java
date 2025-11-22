@@ -11,4 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Returns only users with isStatus == false (inactive users)
     List<User> findByIsStatusFalse();
+
+    User findByUniqueId(String uniqueId);
 }

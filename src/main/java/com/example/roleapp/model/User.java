@@ -39,7 +39,7 @@ public class User {
 
     public Integer getUniqueId() {return uniqueId;}
 
-    public void setUniqueId(Integer uniqueId){this.uniqueId=uniqueId}
+    public void setUniqueId(Integer uniqueId){this.uniqueId=uniqueId;}
 
     public String getName() {
         return name;
