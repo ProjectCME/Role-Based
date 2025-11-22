@@ -6,6 +6,8 @@ metadata:
     app: roleapp
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: roleapp
@@ -39,22 +41,26 @@ spec:
 
           resources:
             requests:
-              cpu: "200m"
+              cpu: "100m"
               memory: "512Mi"
             limits:
               cpu: "500m"
-              memory: "1Gi"
+              memory: "2Gi"
 
           readinessProbe:
             httpGet:
               path: "/actuator/health"
               port: 8080
-            initialDelaySeconds: 30
+            initialDelaySeconds: 90
+            periodSeconds: 15
             timeoutSeconds: 5
+            failureThreshold: 6
 
           livenessProbe:
             httpGet:
               path: "/actuator/health"
               port: 8080
-            initialDelaySeconds: 40
+            initialDelaySeconds: 120
+            periodSeconds: 20
             timeoutSeconds: 5
+            failureThreshold: 6
