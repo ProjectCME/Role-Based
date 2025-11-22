@@ -12,7 +12,7 @@ public class TeacherSubject {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
+    @JoinColumn(name = "teacher_id", referencedColumnName = "uniqueId", nullable = false)
     private User teacher;
 
     @ManyToOne

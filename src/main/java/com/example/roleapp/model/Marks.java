@@ -13,7 +13,7 @@ public class Marks {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "student_id", referencedColumnName = "uniqueId", nullable = false)
     private User student;
 
     @ManyToOne
@@ -26,7 +26,7 @@ public class Marks {
     private Integer marks;
 
     @ManyToOne
-    @JoinColumn(name = "created_by_teacher_id", nullable = false)
+    @JoinColumn(name = "created_by_teacher_id", referencedColumnName = "uniqueId" , nullable = false)
     private User teacher;
 
     @Lob
