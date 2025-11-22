@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: roleapp-deployment
+  labels:
+    app: roleapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: roleapp
+  template:
+    metadata:
+      labels:
+        app: roleapp
+    spec:
+      containers:
+        - name: roleapp
+          image: asia-south1-docker.pkg.dev/role-based-478706/roleapp/roleapp:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: roleapp-db-secret
+                  key: DB_URL
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: roleapp-db-secret
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: roleapp-db-secret
+                  key: DB_PASSWORD
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: "/"
+              port: 8080
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: "/"
+              port: 8080
+            initialDelaySeconds: 40
+            timeoutSeconds: 5
