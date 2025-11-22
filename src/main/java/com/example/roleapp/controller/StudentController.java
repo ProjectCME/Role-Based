@@ -19,19 +19,20 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    // Example: /student/grades?year=1&semester=2
+    // Example: /student/grades?studentId=101&year=1&semester=2
     @GetMapping("/grades")
     public ResponseEntity<?> getGrades(
-            @RequestParam String studentId,
+            @RequestParam Integer studentId,   
             @RequestParam Integer year,
             @RequestParam Integer semester) {
 
         List<MarkDto> grades =
-                studentService.getGrades(studentId, year, semester);
+                studentService.getGrades(studentId, year, semester); 
 
         if (grades.isEmpty()) {
             return ResponseEntity.ok("No marks uploaded yet for this year/semester");
         }
+
         return ResponseEntity.ok(grades);
     }
 }

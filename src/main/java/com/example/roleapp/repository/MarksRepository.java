@@ -8,7 +8,7 @@ import com.example.roleapp.model.Marks;
 
 public interface MarksRepository extends JpaRepository<Marks,Long>{
     List<Marks> findByStudentUniqueIdAndSubjectAcademicYearAndSubjectSemester(
-            String studentId,
+            Integer studentId,
             Integer academicYear,
             Integer semester
     );

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +20,14 @@ public class StudentService {
     @Autowired
     private MarksRepository marksRepository;
 
-
-    public List<MarkDto> getGrades(String studentUniqueId,Integer year,Integer semester) {
-
+    public List<MarkDto> getGrades(Integer studentUniqueId, Integer year, Integer semester) {
 
         List<Marks> marksList =
                 marksRepository.findByStudentUniqueIdAndSubjectAcademicYearAndSubjectSemester(
-                        studentUniqueId, year, semester);
-if (marksList.isEmpty()) {
-            return List.of(); // No results
+                        studentUniqueId, year, semester);  
+
+        if (marksList.isEmpty()) {
+            return List.of(); // no results
         }
 
         Map<Long, List<Marks>> grouped = marksList.stream()
