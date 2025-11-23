@@ -12,13 +12,12 @@ public class TeacherSubject {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "teacher_id", referencedColumnName = "uniqueId", nullable = false)
+    @JoinColumn(name = "teacher_id", referencedColumnName = "uniqueId", nullable = false, columnDefinition = "INT")
     private User teacher;
 
     @ManyToOne
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
-
 
     public Subject getSubject() {
         return subject;
@@ -32,8 +31,7 @@ public class TeacherSubject {
         return teacher;
     }
 
-    //Setters
-
+    // Setters
 
     public void setId(Long id) {
         this.id = id;
@@ -46,6 +44,5 @@ public class TeacherSubject {
     public void setSubject(Subject subject) {
         this.subject = subject;
     }
-
 
 }

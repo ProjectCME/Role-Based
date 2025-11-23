@@ -6,14 +6,16 @@ import jakarta.persistence.*;
 @Table(name = "marks")
 public class Marks {
 
-    public enum ExamType { IA1, IA2, IA3, SPECIAL }
+    public enum ExamType {
+        IA1, IA2, IA3, SPECIAL
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "student_id", referencedColumnName = "uniqueId", nullable = false)
+    @JoinColumn(name = "student_id", referencedColumnName = "uniqueId", nullable = false, columnDefinition = "INT")
     private User student;
 
     @ManyToOne
@@ -26,14 +28,14 @@ public class Marks {
     private Integer marks;
 
     @ManyToOne
-    @JoinColumn(name = "created_by_teacher_id", referencedColumnName = "uniqueId" , nullable = false)
+    @JoinColumn(name = "created_by_teacher_id", referencedColumnName = "uniqueId", nullable = false, columnDefinition = "INT")
     private User teacher;
 
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] marksProofPdf;
 
-    //Getters
+    // Getters
 
     public Long getId() {
         return id;
@@ -59,13 +61,11 @@ public class Marks {
         return marksProofPdf;
     }
 
-    public User getTeacher(){
+    public User getTeacher() {
         return teacher;
     }
 
-
-    //Setters
-
+    // Setters
 
     public void setExamType(ExamType examType) {
         this.examType = examType;
