@@ -35,6 +35,7 @@ status (PENDING / VERIFIED / EXPIRED)
 created_at
 
 SUBJECT 
+subject_id
 subject_name
 semester
 academic_year
