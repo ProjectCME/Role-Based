@@ -1,1 +1,104 @@
 <!-- html for dashboard teacher -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="/css/teacher.css" />
+</head>
+
+<body>
+
+    <header class="topbar">
+        <div class="brand">Teacher Dashboard</div>
+        <div class="actions">
+            <span class="username" th:text="${teacherName}">Teacher</span>
+            <a class="btn small" href="/logout">Logout</a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- Upload Panel -->
+        <section class="panel">
+            <h2>Upload Internal Marks</h2>
+            <p class="hint">
+                Upload marks in CSV format:  
+                <code>studentEmail,subjectCode,IA1,IA2,IA3,FINAL</code>
+            </p>
+
+            <form method="post" th:action="@{/api/teacher/upload-marks}" enctype="multipart/form-data">
+
+                <input type="hidden" name="teacherId" th:value="${teacherId}" />
+
+                <div class="form-row">
+                    <label>Subject Code</label>
+                    <input type="text" name="subjectCode" placeholder="e.g., CS101" required />
+                </div>
+
+                <div class="form-row">
+                    <label>Semester</label>
+                    <input type="text" name="semester" placeholder="e.g., 5" required />
+                </div>
+
+                <div class="form-row">
+                    <label>CSV File</label>
+                    <input type="file" name="file" accept=".csv" required />
+                </div>
+
+                <div class="form-row form-actions">
+                    <button class="btn" type="submit">Upload Marks</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Table Panel -->
+        <section class="panel">
+            <h2>Recent Marks</h2>
+
+            <table class="marks-table" th:if="${marks != null}">
+                <thead>
+                    <tr>
+                        <th>Student Email</th>
+                        <th>Subject</th>
+                        <th>IA1</th>
+                        <th>IA2</th>
+                        <th>IA3</th>
+                        <th>FINAL</th>
+                        <th>Best-of-2 Avg</th>
+                        <th>Absent?</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:each="m : ${marks}">
+                        <td th:text="${m.student.user.email}">student@example.com</td>
+                        <td th:text="${m.subjectCode}">CS101</td>
+                        <td th:text="${m.ia1}">45</td>
+                        <td th:text="${m.ia2}">44</td>
+                        <td th:text="${m.ia3}">40</td>
+                        <td th:text="${m.finalExam}">80</td>
+                        <td th:text="${m.bestTwoAverage}">62.5</td>
+                        <td>
+                            <span th:text="${m.ia1Absent || m.ia2Absent || m.ia3Absent || m.finalAbsent ? 'Yes' : 'No'}">
+                                No
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="hint" th:if="${marks == null}">
+                No marks uploaded yet.
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <small>© Teacher Dashboard — Role-Based System</small>
+    </footer>
+
+</body>
+</html>
