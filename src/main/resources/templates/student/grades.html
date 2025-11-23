@@ -1,39 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <title>Marks</title>
-    <link rel="stylesheet" href="\static\css\grades.css" />
-</head>
-<body>
+    <link rel="stylesheet" href="/css/grades.css" />
+  </head>
+  <body>
+    <h2>Your Marks</h2>
 
-<h2>Your Marks</h2>
+    <div th:if="${message}">
+      <p th:text="${message}"></p>
+    </div>
 
-<div th:if="${message}">
-    <p th:text="${message}"></p>
-</div>
-
-<div th:if="${grades}">
-    <table border="1">
+    <div th:if="${grades}">
+      <table border="1">
         <tr>
-            <th>Subject</th>
-            <th>IA1</th>
-            <th>IA2</th>
-            <th>IA3</th>
-            <th>Special</th>
-            <th>Average (Best 2)</th>
+          <th>Subject</th>
+          <th>IA1</th>
+          <th>IA2</th>
+          <th>IA3</th>
+          <th>Special</th>
+          <th>Average (Best 2)</th>
         </tr>
 
         <tr th:each="g : ${grades}">
-            <td th:text="${g.subjectName}"></td>
-            <td th:text="${g.ia1 != null ? g.ia1 : 'Absent'}"></td>
-            <td th:text="${g.ia2 != null ? g.ia2 : 'Absent'}"></td>
-            <td th:text="${g.ia3 != null ? g.ia3 : 'Absent'}"></td>
-            <td th:text="${g.special != null ? g.special : 'Absent'}"></td>
-            <td th:text="${g.avg}"></td>
+          <td th:text="${g.subjectName}"></td>
+          <td th:text="${g.ia1 != null ? g.ia1 : 'Absent'}"></td>
+          <td th:text="${g.ia2 != null ? g.ia2 : 'Absent'}"></td>
+          <td th:text="${g.ia3 != null ? g.ia3 : 'Absent'}"></td>
+          <td th:text="${g.special != null ? g.special : 'Absent'}"></td>
+          <td th:text="${g.bestTwoAvg != null ? g.bestTwoAvg : 'N/A'}"></td>
         </tr>
-
-    </table>
-</div>
-
-</body>
+      </table>
+    </div>
+  </body>
 </html>
