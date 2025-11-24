@@ -1,5 +1,5 @@
 package com.example.roleapp.model;
-import com.example.roleapp.model.User;
+//import com.example.roleapp.model.User;
 import jakarta.persistence.*;
 
 @Entity
