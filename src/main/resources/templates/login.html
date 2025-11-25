@@ -1,47 +1,67 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <title>User Login</title>
-    <link rel="stylesheet" href="/css/style.css"/>
-</head>
-<body>
-<div class="login-wrapper">
-    <div class="title">USER LOGIN</div>
-    <div class="message" id="message"></div>
-    <div class="message success" id="success-message"></div>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="login-wrapper">
+      <div class="title">USER LOGIN</div>
+      <div
+        th:if="${error}"
+        class="message error"
+        style="color: red; font-weight: bold"
+      >
+        <p th:text="${error}"></p>
+      </div>
 
-   
-    <form action="/login" method="post">
+      <div
+        th:if="${success}"
+        class="message success"
+        style="color: green; font-weight: bold"
+      >
+        <p th:text="${success}"></p>
+      </div>
+      <form action="/login" method="post">
         <div class="form-grid">
-            <div>
-                <label>Email Id:</label>
-                <input type="email" id="login-email" name="username" required/>
-            </div>
+          <div>
+            <label>Email Id:</label>
+            <input type="email" id="login-email" name="username" required />
+          </div>
 
-            <div>
-                <label>OTP:</label>
-                <div class="otp-row">
-                    <input type="password" name="otp"
-                           placeholder="Enter OTP" required/>
-                    <button type="button" class="btn-ghost"
-                            id="btn-send-login-otp">Send OTP</button>
-                </div>
+          <div>
+            <label>OTP:</label>
+            <div class="otp-row">
+              <input
+                type="password"
+                name="otp"
+                placeholder="Enter OTP"
+                required
+              />
+              <button type="button" class="btn-ghost" id="btn-send-login-otp">
+                Send OTP
+              </button>
             </div>
+          </div>
         </div>
 
         <div class="actions">
-            <button type="submit" class="btn-primary">Login</button>
-            <a th:href="@{/register}" class="btn-secondary"
-               style="text-decoration:none;display:inline-block;text-align:center">
-                Register
-            </a>
+          <button type="submit" class="btn-primary">Login</button>
+          <a
+            th:href="@{/register}"
+            class="btn-secondary"
+            style="
+              text-decoration: none;
+              display: inline-block;
+              text-align: center;
+            "
+          >
+            Register
+          </a>
         </div>
+      </form>
+    </div>
 
-        
-    </form>
-</div>
-
-<script src="/js/main.js"></script>
-</body>
+    <script src="/js/main.js"></script>
+  </body>
 </html>

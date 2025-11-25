@@ -35,9 +35,10 @@ public class LoginController {
 
     @PostMapping("/send-login-otp")
     @ResponseBody
-    public String sendLoginOtp(@RequestParam String email) {
+    public String sendLoginOtp(@RequestParam String email, Model model) {
         try {
             emailOtpService.sendOtp(email, OtpEvent.Purpose.LOGIN);
+            model.addAttribute("success", "OTP sent to your email.");
             return "OTP sent to your email.";
         } catch (Exception e) {
             return "Error sending OTP: " + e.getMessage();
@@ -115,7 +116,7 @@ public class LoginController {
             boolean verified = emailOtpService.verifyOtp(dto.getEmail(), dto.getOtp(), OtpEvent.Purpose.REGISTRATION);
             if (verified) {
                 // User is already created and status set to true in verifyOtp
-                model.addAttribute("success", "Registration successful. Please login.");
+                model.addAttribute("success", "Registration successful. Please wait for admin approval.");
                 return "login";
             } else {
                 model.addAttribute("error", "Invalid OTP.");

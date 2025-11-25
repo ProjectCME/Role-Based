@@ -21,7 +21,8 @@ public class EmailOtpService {
     private final OtpEventRepository otpEventRepository;
     private final UserRepository userRepository;
 
-    public EmailOtpService(JavaMailSender mailSender, OtpEventRepository otpEventRepository, UserRepository userRepository) {
+    public EmailOtpService(JavaMailSender mailSender, OtpEventRepository otpEventRepository,
+            UserRepository userRepository) {
         this.mailSender = mailSender;
         this.otpEventRepository = otpEventRepository;
         this.userRepository = userRepository;
@@ -65,7 +66,8 @@ public class EmailOtpService {
         }
         User user = userOpt.get();
 
-        Optional<OtpEvent> otpEventOpt = otpEventRepository.findTopByUserAndPurposeAndStatusOrderByCreatedAtDesc(user, purpose, OtpEvent.Status.PENDING);
+        Optional<OtpEvent> otpEventOpt = otpEventRepository.findTopByUserAndPurposeAndStatusOrderByCreatedAtDesc(user,
+                purpose, OtpEvent.Status.PENDING);
         if (otpEventOpt.isEmpty()) {
             return false;
         }
@@ -78,10 +80,6 @@ public class EmailOtpService {
         // Mark as verified
         otpEvent.setStatus(OtpEvent.Status.VERIFIED);
         otpEventRepository.save(otpEvent);
-
-        // Set user isStatus to true
-        user.setStatus(true);
-        userRepository.save(user);
 
         return true;
     }
