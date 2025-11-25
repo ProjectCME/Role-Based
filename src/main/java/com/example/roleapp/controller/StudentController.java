@@ -18,6 +18,11 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
+    @GetMapping("")
+    public String studentHome() {
+        return "student/student"; // this is student.html
+    }
+
     @GetMapping("/grades")
     public String getGrades(
             @RequestParam Integer studentId,
@@ -29,7 +34,7 @@ public class StudentController {
 
         if (grades.isEmpty()) {
             model.addAttribute("message", "No marks uploaded yet for this year/semester");
-            return "grades";   // this is grades.html
+            return "student/grades"; // this is grades.html
         }
 
         model.addAttribute("grades", grades);
@@ -37,6 +42,6 @@ public class StudentController {
         model.addAttribute("year", year);
         model.addAttribute("semester", semester);
 
-        return "grades";   // Thymeleaf template
+        return "student/grades"; // Thymeleaf template
     }
 }

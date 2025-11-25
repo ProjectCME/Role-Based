@@ -19,6 +19,7 @@ spec:
       containers:
         - name: roleapp
           image: asia-south1-docker.pkg.dev/role-based-478706/roleapp/roleapp:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
 
@@ -38,7 +39,26 @@ spec:
                 secretKeyRef:
                   name: roleapp-db-secret
                   key: DB_PASSWORD
-
+            - name: MAIL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: roleapp-mail-secret
+                  key: MAIL_HOST
+            - name: MAIL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: roleapp-mail-secret
+                  key: MAIL_PORT
+            - name: MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: roleapp-mail-secret
+                  key: MAIL_USERNAME
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: roleapp-mail-secret
+                  key: MAIL_PASSWORD
           resources:
             requests:
               cpu: "100m"
