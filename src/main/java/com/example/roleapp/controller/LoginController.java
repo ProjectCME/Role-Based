@@ -17,6 +17,8 @@ import com.example.roleapp.model.User;
 import com.example.roleapp.repository.UserRepository;
 import com.example.roleapp.service.EmailOtpService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class LoginController {
 
@@ -46,7 +48,8 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String otp, Model model) {
+    public String login(@RequestParam String username, @RequestParam String otp, Model model,
+            HttpServletRequest request) {
         boolean verified = emailOtpService.verifyOtp(username, otp, OtpEvent.Purpose.LOGIN);
         if (!verified) {
             model.addAttribute("error", "Invalid OTP or expired.");
@@ -64,6 +67,10 @@ public class LoginController {
             model.addAttribute("error", "Your account is not approved by admin yet.");
             return "login";
         }
+
+        // save auth in session
+        request.getSession().setAttribute("userRole", user.getRole().name());
+        request.getSession().setAttribute("userEmail", user.getEmail());
 
         // Redirect based on role
         switch (user.getRole()) {
