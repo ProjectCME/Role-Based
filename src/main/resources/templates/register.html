@@ -1,1 +1,63 @@
 <!-- HTML COde for register page -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Registration</title>
+    <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<div class="registration-wrapper">
+    <div class="title">USER REGISTRATION</div>
+    <div class="message" id="message"></div>
+    <div class="message success" id="success-message"></div>
+
+    <form action="/register" method="post">
+        <div class="form-grid">
+            <div>
+                <label>Name:</label>
+                <input type="text" name="name" id="reg-name" required/>
+            </div>
+
+            <div>
+                <label>Email Id:</label>
+                <input type="email" name="email" id="reg-email" required/>
+            </div>
+
+            <div>
+                <label>Role:</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="role" value="TEACHER" checked/> Teacher
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="STUDENT"/> Student
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <label>OTP:</label>
+                <div class="otp-row">
+                          <input type="text" name="otp" id="reg-otp"
+                              placeholder="Enter OTP" required/>
+                    <button type="button" class="btn-ghost"
+                            id="btn-send-reg-otp">Send OTP</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn-primary">Register</button>
+            <a th:href="@{/login}" class="btn-secondary"
+               style="text-decoration:none;display:inline-block;text-align:center">
+                Cancel
+            </a>
+        </div>
+
+       
+    </form>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
