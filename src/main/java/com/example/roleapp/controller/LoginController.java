@@ -47,12 +47,34 @@ public class LoginController {
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String otp, Model model) {
         boolean verified = emailOtpService.verifyOtp(username, otp, OtpEvent.Purpose.LOGIN);
-        if (verified) {
-            // Redirect to dashboard based on role, but for now, assume success
-            return "redirect:/dashboard"; // Placeholder
-        } else {
+        if (!verified) {
             model.addAttribute("error", "Invalid OTP or expired.");
             return "login";
+        }
+        Optional<User> userOpt = userRepository.findByEmail(username);
+        if (userOpt.isEmpty()) {
+            model.addAttribute("error", "User not found.");
+            return "login";
+        }
+        User user = userOpt.get();
+
+        // Check approval status
+        if (!user.isStatus()) {
+            model.addAttribute("error", "Your account is not approved by admin yet.");
+            return "login";
+        }
+
+        // Redirect based on role
+        switch (user.getRole()) {
+            case ADMIN:
+                return "redirect:/admin/dashboard";
+            case TEACHER:
+                return "redirect:/teacher/dashboard";
+            case STUDENT:
+                return "redirect:/student/dashboard";
+            default:
+                model.addAttribute("error", "Invalid role.");
+                return "login";
         }
     }
 

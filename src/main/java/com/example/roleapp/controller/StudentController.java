@@ -18,7 +18,7 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    @GetMapping("")
+    @GetMapping("/dashboard")
     public String studentHome() {
         return "student/student"; // this is student.html
     }
