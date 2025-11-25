@@ -3,3 +3,4 @@ target/
 *.class
 .env
 *.properties
+.vscode/launch.json
