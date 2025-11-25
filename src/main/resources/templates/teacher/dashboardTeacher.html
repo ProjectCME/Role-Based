@@ -1,1 +1,198 @@
-<!-- html for dashboard teacher -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="/css/dashboardTeacher.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo">Teacher Portal</div>
+      <div class="user-info">
+        <span>Welcome, Instructor</span>
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </header>
+
+    <div class="container">
+      <div id="main-menu" class="dashboard-section">
+        <h2>TEACHER DASHBOARD</h2>
+        <div class="card-container">
+          <div class="card" onclick="showSection('upload-section')">
+            <i class="fas fa-file-upload fa-3x"></i>
+            <h3>Upload I.A. Marks</h3>
+            <p>Upload CSV files for Internal Assessments</p>
+          </div>
+          <div class="card" onclick="showSection('view-section')">
+            <i class="fas fa-table fa-3x"></i>
+            <h3>View I.A. Marks</h3>
+            <p>View marks in tabular format</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="upload-section" class="dashboard-section" style="display: none">
+        <div class="section-header">
+          <button class="back-btn" onclick="showSection('main-menu')">
+            ← Back
+          </button>
+          <h2>Upload I.A. Marks</h2>
+        </div>
+
+        <div class="form-box">
+          <form
+            action="/teacher/upload-marks"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <div class="form-group">
+              <label>Academic Year:</label>
+              <select name="year" required>
+                <option value="" disabled selected>Select Year</option>
+                <option value="1">Year 1</option>
+                <option value="2">Year 2</option>
+                <option value="3">Year 3</option>
+                <option value="4">Year 4</option>
+                <option value="5">Year 5</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Semester:</label>
+              <select name="semester" required>
+                <option value="" disabled selected>Select Semester</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+                <option value="9">Semester 9</option>
+                <option value="10">Semester 10</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Subject:</label>
+              <select name="subjectId" required>
+                <option value="" disabled selected>Select Subject</option>
+                <option
+                  th:each="subject : ${teacherSubjects}"
+                  th:value="${subject.id}"
+                  th:text="${subject.subjectName}"
+                ></option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>I.A. Type:</label>
+              <select name="examType" required>
+                <option value="" disabled selected>Select Exam Type</option>
+                <option value="IA1">IA 1</option>
+                <option value="IA2">IA 2</option>
+                <option value="IA3">IA 3</option>
+                <option value="SPECIAL">IA 4</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Upload File (.csv):</label>
+              <input type="file" name="file" accept=".csv" required />
+            </div>
+
+            <button type="submit" class="submit-btn">Upload Marks</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="view-section" class="dashboard-section" style="display: none">
+        <div class="section-header">
+          <button class="back-btn" onclick="showSection('main-menu')">
+            ← Back
+          </button>
+          <h2>View I.A. Marks</h2>
+        </div>
+
+        <form action="/teacher/view-marks" method="get" class="filter-bar">
+          <select name="year">
+            <option value="">Year</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+
+          <select name="semester">
+            <option value="">Semester</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+
+          <select name="subjectId">
+            <option value="">Subject</option>
+            <option
+              th:each="subject : ${teacherSubjects}"
+              th:value="${subject.id}"
+              th:text="${subject.subjectName}"
+            ></option>
+          </select>
+
+          <button type="submit" class="filter-btn">Search</button>
+        </form>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Student Name (Subject)</th>
+                <th>IA 1</th>
+                <th>IA 2</th>
+                <th>IA 3</th>
+                <th>IA 4</th>
+                <th>Average (Best 2)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="mark : ${studentList}">
+                <td th:text="${mark.subjectName}"></td>
+                <td th:text="${mark.ia1}"></td>
+                <td th:text="${mark.ia2}"></td>
+                <td th:text="${mark.ia3}"></td>
+                <td th:text="${mark.special}"></td>
+                <td th:text="${mark.bestTwoAvg}"></td>
+              </tr>
+              <tr th:if="${studentList == null or studentList.isEmpty()}">
+                <td colspan="6" style="text-align: center">
+                  No records found. Use the filters to search.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showSection(sectionId) {
+        document.querySelectorAll(".dashboard-section").forEach((div) => {
+          div.style.display = "none";
+        });
+        document.getElementById(sectionId).style.display = "block";
+      }
+    </script>
+  </body>
+</html>
