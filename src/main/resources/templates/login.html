@@ -8,7 +8,12 @@
     <div class="login-wrapper">
       <div class="title">USER LOGIN</div>
       <div class="message" id="message"></div>
-      <div class="message success" id="success-message"></div>
+      <div class="message" th:if="${error}" th:text="${error}"></div>
+      <div
+        class="message success"
+        th:if="${success}"
+        th:text="${success}"
+      ></div>
       <form action="/login" method="post">
         <div class="form-grid">
           <div>
