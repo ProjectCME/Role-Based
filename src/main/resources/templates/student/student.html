@@ -8,6 +8,7 @@
     <h2>View Marks</h2>
 
     <form action="/student/grades" method="get">
+      <input type="hidden" name="studentId" th:value="${studentUniqueId}" />
       <label>Academic Year:</label>
       <select name="year">
         <option value="1">Year 1</option>

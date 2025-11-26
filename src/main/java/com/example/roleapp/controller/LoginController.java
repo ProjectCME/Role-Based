@@ -71,7 +71,7 @@ public class LoginController {
         // save auth in session
         request.getSession().setAttribute("userRole", user.getRole().name());
         request.getSession().setAttribute("userEmail", user.getEmail());
-
+        request.getSession().setAttribute("studentUniqueId", user.getUniqueId());
         // Redirect based on role
         switch (user.getRole()) {
             case ADMIN:
