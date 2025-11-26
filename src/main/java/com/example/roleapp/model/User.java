@@ -14,7 +14,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private Integer uniqueId;
 
     private String name;
@@ -25,6 +25,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "is_status")
     private boolean isStatus;
 
     // GETTERS & SETTERS
@@ -37,9 +38,13 @@ public class User {
         this.id = id;
     }
 
-    public Integer getUniqueId() {return uniqueId;}
+    public Integer getUniqueId() {
+        return uniqueId;
+    }
 
-    public void setUniqueId(Integer uniqueId){this.uniqueId=uniqueId;}
+    public void setUniqueId(Integer uniqueId) {
+        this.uniqueId = uniqueId;
+    }
 
     public String getName() {
         return name;

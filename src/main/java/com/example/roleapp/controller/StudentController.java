@@ -2,6 +2,10 @@ package com.example.roleapp.controller;
 
 import com.example.roleapp.dto.MarkDto;
 import com.example.roleapp.service.StudentService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +22,15 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    @GetMapping("")
-    public String studentHome() {
-        return "student/student"; // this is student.html
+    @GetMapping("/dashboard")
+    public String studentHome(HttpServletRequest request, Model model) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("studentUniqueId", session.getAttribute("studentUniqueId"));
+        return "student/student";
     }
 
     @GetMapping("/grades")
@@ -28,8 +38,19 @@ public class StudentController {
             @RequestParam Integer studentId,
             @RequestParam Integer year,
             @RequestParam Integer semester,
+            HttpServletRequest request,
             Model model) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return "redirect:/login";
+        }
 
+        Integer loggedInStudentId = (Integer) session.getAttribute("studentUniqueId");
+
+        // student cannot view others' marks
+        if (!loggedInStudentId.equals(studentId)) {
+            return "redirect:/403";
+        }
         List<MarkDto> grades = studentService.getGrades(studentId, year, semester);
 
         if (grades.isEmpty()) {

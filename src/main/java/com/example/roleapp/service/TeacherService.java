@@ -16,45 +16,52 @@ import java.util.stream.Collectors;
 @Service
 public class TeacherService {
 
-    @Autowired private MarksRepository marksRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private SubjectRepository subjectRepository;
-    @Autowired private TeacherSubjectRepository teacherSubjectRepository;
+    @Autowired
+    private MarksRepository marksRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private SubjectRepository subjectRepository;
+    @Autowired
+    private TeacherSubjectRepository teacherSubjectRepository;
 
-  
     public List<Subject> getAssignedSubjects(String teacherIdString) {
-        //Parse to Integer
+        // Parse to Integer
         Integer teacherId = Integer.parseInt(teacherIdString);
 
         User teacher = Optional.ofNullable(userRepository.findByUniqueId(teacherId))
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
-        
+
         return teacherSubjectRepository.findByTeacher(teacher).stream()
                 .map(TeacherSubject::getSubject)
                 .collect(Collectors.toList());
     }
 
-    //CSV Upload Logic
+    // CSV Upload Logic
     @Transactional
-    public void saveMarks(MultipartFile file, Long subjectId, String examTypeStr, String teacherIdString) throws IOException {
-        Integer teacherId = Integer.parseInt(teacherIdString);
-        
-        User teacher = Optional.ofNullable(userRepository.findByUniqueId(teacherId))
+    public void saveMarks(MultipartFile file, Long subjectId, String examTypeStr, String teacherEmail)
+            throws IOException {
+
+        // Find teacher by email (NOT uniqueId)
+        User teacher = userRepository.findByEmail(teacherEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
-        Marks.ExamType examType = Marks.ExamType.valueOf(examTypeStr); 
+
+        Marks.ExamType examType = Marks.ExamType.valueOf(examTypeStr);
         List<CSVHelper.CsvRecord> records = CSVHelper.parse(file);
 
         for (CSVHelper.CsvRecord record : records) {
-            //Finding student
+
             User student = Optional.ofNullable(userRepository.findByUniqueId(record.studentUniqueId))
                     .orElse(null);
-                    
-            if (student == null) continue; //for invalid student id
 
-            //Marks Update Lgic
-            Marks markEntity = marksRepository.findByStudentAndSubjectAndExamType(student, subject, examType)
+            if (student == null)
+                continue; // for invalid student id
+
+            Marks markEntity = marksRepository
+                    .findByStudentAndSubjectAndExamType(student, subject, examType)
                     .orElse(new Marks());
 
             if (markEntity.getId() == null) {
@@ -63,20 +70,29 @@ public class TeacherService {
                 markEntity.setTeacher(teacher);
                 markEntity.setExamType(examType);
             }
+
             markEntity.setMarks(record.marks);
-            
             marksRepository.save(markEntity);
         }
     }
 
-    //Creating Views
+    // Fetch assigned subjects
+    public List<Subject> getAssignedSubjectsByEmail(String teacherEmail) {
+        User teacher = userRepository.findByEmail(teacherEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+        return teacherSubjectRepository.findByTeacher(teacher).stream()
+                .map(TeacherSubject::getSubject)
+                .collect(Collectors.toList());
+    }
+
+    // Creating Views
     public List<MarkDto> getTeacherViewData(String teacherIdString, Integer year, Integer semester, Long subjectId) {
         Integer teacherId = Integer.parseInt(teacherIdString);
-        
+
         User teacher = Optional.ofNullable(userRepository.findByUniqueId(teacherId))
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
         List<Marks> rawMarks = marksRepository.findByTeacher(teacher);
-        //Filter Logic
+        // Filter Logic
         if (subjectId != null) {
             rawMarks = rawMarks.stream().filter(m -> m.getSubject().getId().equals(subjectId)).toList();
         }
@@ -87,15 +103,16 @@ public class TeacherService {
             rawMarks = rawMarks.stream().filter(m -> m.getSubject().getSemester().equals(semester)).toList();
         }
 
-        //Grouping Logic
+        // Grouping Logic
         Map<String, List<Marks>> grouped = rawMarks.stream()
                 .collect(Collectors.groupingBy(m -> m.getStudent().getUniqueId() + "-" + m.getSubject().getId()));
 
         List<MarkDto> response = new ArrayList<>();
 
         for (List<Marks> entry : grouped.values()) {
-            if (entry.isEmpty()) continue;
-            
+            if (entry.isEmpty())
+                continue;
+
             Marks ref = entry.get(0);
             MarkDto dto = new MarkDto();
             dto.setSubjectName(ref.getStudent().getName() + " (" + ref.getSubject().getSubjectName() + ")");
@@ -104,11 +121,15 @@ public class TeacherService {
 
             for (Marks m : entry) {
                 String val = (m.getMarks() == null) ? "Absent" : String.valueOf(m.getMarks());
-                
-                if (m.getExamType() == Marks.ExamType.IA1) ia1 = val;
-                else if (m.getExamType() == Marks.ExamType.IA2) ia2 = val;
-                else if (m.getExamType() == Marks.ExamType.IA3) ia3 = val;
-                else if (m.getExamType() == Marks.ExamType.SPECIAL) special = val;
+
+                if (m.getExamType() == Marks.ExamType.IA1)
+                    ia1 = val;
+                else if (m.getExamType() == Marks.ExamType.IA2)
+                    ia2 = val;
+                else if (m.getExamType() == Marks.ExamType.IA3)
+                    ia3 = val;
+                else if (m.getExamType() == Marks.ExamType.SPECIAL)
+                    special = val;
             }
 
             dto.setIa1(ia1);
