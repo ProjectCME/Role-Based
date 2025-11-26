@@ -19,7 +19,6 @@
   <body>
     <div class="container">
       <h2>VIEW USERS</h2>
-
       <table>
         <thead>
           <tr>
@@ -27,16 +26,37 @@
             <th>Email</th>
             <th>Role</th>
             <th>Status</th>
+            <th>Soft Delete</th>
           </tr>
         </thead>
 
         <tbody>
+          <!-- when there are no users -->
+          <tr th:if="${#lists.isEmpty(users)}">
+            <td colspan="5" class="empty-msg">No users found.</td>
+          </tr>
+
           <!-- Loop Through All Active Users -->
           <tr th:each="u : ${users}">
             <td th:text="${u.name}"></td>
             <td th:text="${u.email}"></td>
             <td th:text="${u.role}"></td>
             <td th:text="${u.status} ? 'Active' : 'Inactive'"></td>
+            <td>
+              <form
+                th:action="@{/admin/delete/{id}(id=${u.id})}"
+                method="post"
+                style="display: inline"
+              >
+                <button
+                  type="submit"
+                  class="delete-btn"
+                  onclick="return confirm('Soft delete this user?');"
+                >
+                  Soft Delete
+                </button>
+              </form>
+            </td>
           </tr>
         </tbody>
       </table>

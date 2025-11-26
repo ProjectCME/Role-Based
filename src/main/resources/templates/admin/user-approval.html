@@ -32,6 +32,11 @@
         </thead>
 
         <tbody>
+          <!--  when there are no users to approve -->
+          <tr th:if="${#lists.isEmpty(users)}">
+            <td colspan="5" class="empty-msg">No pending users found.</td>
+          </tr>
+
           <!-- Loop over DTO list -->
           <tr th:each="u : ${users}">
             <td th:text="${u.name}"></td>
