@@ -47,13 +47,38 @@ public class StudentService {
             List<Integer> iaValues = new ArrayList<>();
 
             for (Marks m : subjectMarks) {
-                if (m.getMarks() == null) continue;
-
-                switch (m.getExamType()) {
-                    case IA1 -> { ia1 = String.valueOf(m.getMarks()); iaValues.add(m.getMarks()); }
-                    case IA2 -> { ia2 = String.valueOf(m.getMarks()); iaValues.add(m.getMarks()); }
-                    case IA3 -> { ia3 = String.valueOf(m.getMarks()); iaValues.add(m.getMarks()); }
-                    case SPECIAL -> special = String.valueOf(m.getMarks());
+                Integer marks = m.getMarks();
+                switch (m.getExamType()){
+                    case IA1:
+                        if(marks==null){
+                            ia1 = "Absent";
+                        } else {
+                            ia1 = String.valueOf(m.getMarks());
+                            iaValues.add(m.getMarks());
+                        }
+                    case IA2:
+                        if(marks==null){
+                            ia2 = "Absent";
+                        } else {
+                            ia2 = String.valueOf(m.getMarks());
+                            iaValues.add(m.getMarks());
+                        }
+                    case IA3:
+                        if(marks==null){
+                            ia3 = "Absent";
+                        } else {
+                            ia3 = String.valueOf(m.getMarks());
+                            iaValues.add(m.getMarks());
+                        }
+                    case SPECIAL:
+                        if(marks==null){
+                            special = "Absent";
+                            iaValues.add(0);
+                        } else {
+                            special = String.valueOf(m.getMarks());
+                            iaValues.add(m.getMarks());
+                        }
+                        
                 }
             }
 
