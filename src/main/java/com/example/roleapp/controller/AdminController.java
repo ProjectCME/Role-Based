@@ -1,8 +1,11 @@
 package com.example.roleapp.controller;
 
 import com.example.roleapp.dto.AdminMarkViewDto;
+import com.example.roleapp.dto.AdminTeacherSubjectDto;
+
 import java.util.List;
 import com.example.roleapp.service.AdminStudentMarksService;
+import com.example.roleapp.service.AdminTeacherService;
 //import com.example.roleapp.dto.UserDto;
 import com.example.roleapp.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -17,10 +20,14 @@ public class AdminController {
 
     private final AdminStudentMarksService adminStudentMarksService;
 
+    private final AdminTeacherService adminTeacherService;
+
     public AdminController(UserService userService,
-            AdminStudentMarksService adminStudentMarksService) {
+            AdminStudentMarksService adminStudentMarksService,
+            AdminTeacherService adminTeacherService) {
         this.userService = userService;
         this.adminStudentMarksService = adminStudentMarksService;
+        this.adminTeacherService = adminTeacherService;
     }
 
     // Admin Dashboard Page UI
@@ -67,10 +74,26 @@ public class AdminController {
 
         if (adminAccess != null) {
             model.addAttribute("adminMessage",
-                    "You are an Admin and tried to access a student page. Showing full student marks instead.");
+                    "You are an Admin and tried to access a student page. Showing full student marks.");
         }
 
         return "admin/student-marks"; // admin student marks view
+    }
+
+    @GetMapping("/teacher-overview")
+    public String teacherOverview(
+            @RequestParam(value = "adminAccess", required = false) String adminAccess,
+            Model model) {
+
+        List<AdminTeacherSubjectDto> list = adminTeacherService.getAllTeacherSubjectMappings();
+        model.addAttribute("teacherMappingList", list);
+
+        if (adminAccess != null) {
+            model.addAttribute("adminMessage",
+                    "You are an Admin and tried to access a teacher page. Showing teacher subject mapping.");
+        }
+
+        return "admin/teacher-overview";
     }
 
 }

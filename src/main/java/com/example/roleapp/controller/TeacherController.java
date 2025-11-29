@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collections;
@@ -19,6 +18,16 @@ public class TeacherController {
 
     @Autowired
     private TeacherService teacherService;
+
+    // helper method to check admin session role
+    private boolean isAdmin(HttpServletRequest request) {
+        if (request == null)
+            return false;
+        if (request.getSession(false) == null)
+            return false;
+        Object roleObj = request.getSession(false).getAttribute("userRole");
+        return roleObj != null && "ADMIN".equals(roleObj.toString());
+    }
 
     private void loadSubjects(Model model, Principal principal, HttpServletRequest request) {
         List<Subject> subjects = Collections.emptyList();
@@ -45,6 +54,9 @@ public class TeacherController {
     // 1. Dashboard Page Load
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal, HttpServletRequest request) {
+        if (isAdmin(request)) {
+            return "redirect:/admin/teacher-overview?adminAccess=true";
+        }
         loadSubjects(model, principal, request);
         return "teacher/dashboardTeacher";
     }
@@ -58,7 +70,9 @@ public class TeacherController {
             Model model,
             Principal principal,
             HttpServletRequest request) {
-
+        if (isAdmin(request)) {
+            return "redirect:/admin/teacher-overview?adminAccess=true";
+        }
         String teacherIdentifier = null;
         if (principal != null)
             teacherIdentifier = principal.getName();
@@ -85,7 +99,9 @@ public class TeacherController {
             Model model,
             Principal principal,
             HttpServletRequest request) {
-
+        if (isAdmin(request)) {
+            return "redirect:/admin/teacher-overview?adminAccess=true";
+        }
         String teacherIdentifier = null;
         if (principal != null)
             teacherIdentifier = principal.getName();
