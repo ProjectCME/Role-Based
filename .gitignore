@@ -4,3 +4,4 @@ target/
 .env
 *.properties
 .vscode/launch.json
+src/main/resources/application.properties
