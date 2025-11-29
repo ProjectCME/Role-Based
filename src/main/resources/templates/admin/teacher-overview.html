@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>All Teachers &amp; Their Subjects</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 30px;
+        background: #fdfdfd;
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 600;
+      }
+
+      .message {
+        background: #fff8c6;
+        padding: 10px 15px;
+        border: 1px solid #e6d983;
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #333;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px 10px;
+        text-align: left;
+      }
+
+      th {
+        background: #f0f0f0;
+        font-weight: bold;
+      }
+
+      tr:nth-child(even) {
+        background-color: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>All Teachers &amp; Their Subjects</h2>
+
+    <div class="message" th:if="${adminMessage}">
+      <span th:text="${adminMessage}"></span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Teacher Name</th>
+          <th>Email</th>
+          <th>Subject</th>
+          <th>Semester</th>
+          <th>Academic Year</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr th:each="t : ${teacherMappingList}">
+          <td th:text="${t.teacherName}"></td>
+          <td th:text="${t.teacherEmail}"></td>
+          <td th:text="${t.subjectName}"></td>
+          <td th:text="${t.semester}"></td>
+          <td th:text="${t.academicYear}"></td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

@@ -29,6 +29,14 @@ public class StudentController {
             return "redirect:/login";
         }
 
+        String role = (String) session.getAttribute("userRole");
+
+        // If admin tries to open student dashboard then redirect to admin student marks
+        // page
+        if ("ADMIN".equals(role)) {
+            return "redirect:/admin/student-marks?adminAccess=true";
+        }
+
         model.addAttribute("studentUniqueId", session.getAttribute("studentUniqueId"));
         return "student/student";
     }
