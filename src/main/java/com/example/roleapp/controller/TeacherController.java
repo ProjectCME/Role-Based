@@ -20,7 +20,7 @@ public class TeacherController {
     @Autowired
     private TeacherService teacherService;
 
-    // helper method to check admin session role
+    //Check Admin Session ROle
     private boolean isAdmin(HttpServletRequest request) {
         if (request == null)
             return false;
@@ -30,15 +30,16 @@ public class TeacherController {
         return roleObj != null && "ADMIN".equals(roleObj.toString());
     }
 
-    //Get Teacher ID from principal/session
+    //Taking Teacher ID as string from principal/session
     private String getTeacherId(Principal principal, HttpServletRequest request) {
-        //Try Principal
+        //Try Principal 
         if (principal != null) {
             return principal.getName(); 
         }
         //Try Session
         HttpSession session = request.getSession(false);
         if (session != null) {
+            //Retrieve ID
             Object idObj = session.getAttribute("studentUniqueId"); 
             if (idObj != null) {
                 return String.valueOf(idObj);
@@ -59,7 +60,7 @@ public class TeacherController {
         model.addAttribute("teacherSubjects", subjects);
     }
 
-    //Dashboard Page Load
+    //Dashboard
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal, HttpServletRequest request) {
         if (isAdmin(request)) {
@@ -71,7 +72,7 @@ public class TeacherController {
         return "teacher/dashboardTeacher";
     }
 
-    //Handle CSV Upload (marks)
+    //CSV Uploads
     @PostMapping("/upload-marks")
     public String uploadMarks(
             @RequestParam("file") MultipartFile file,
@@ -98,7 +99,7 @@ public class TeacherController {
         return "teacher/dashboardTeacher";
     }
 
-    //Handle View/Search Marks
+    //View/Search Marks
     @GetMapping("/view-marks")
     public String viewMarks(
             @RequestParam(required = false) Integer year,
