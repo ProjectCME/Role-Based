@@ -49,14 +49,25 @@ public class TeacherService {
 
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
+        
+        //This part ensures that the correct teacher is uploading marks for their assigned subjects only (Rogue Teacher Prevention)
+        boolean isAssigned = teacherSubjectRepository.findByTeacher(teacher).stream().anyMatch(ts -> ts.getSubject().getId().equals(subjectId));
 
+        if (!isAssigned) {
+            throw new IllegalArgumentException("Access Denied: You are not assigned to subject " + subject.getSubjectName());
+        }
+        
         Marks.ExamType examType = Marks.ExamType.valueOf(examTypeStr);
         List<CSVHelper.CsvRecord> records = CSVHelper.parse(file);
-
+        Set<Integer> processedStudentIds = new HashSet<>();
         for (CSVHelper.CsvRecord record : records) {
-            User student = Optional.ofNullable(userRepository.findByUniqueId(record.studentUniqueId))
-                    .orElse(null);
+            User student = Optional.ofNullable(userRepository.findByUniqueId(record.studentUniqueId)).orElse(null);
 
+            if (processedStudentIds.contains(record.studentUniqueId)) {continue;} //Skips Duplicate in the same file
+            processedStudentIds.add(record.studentUniqueId);
+
+            if (record.marks != null && (record.marks < 0 || record.marks > 100)) {
+                throw new IllegalArgumentException("Invalid marks for Student ID " + record.studentUniqueId + ": " + record.marks);}
             if (student == null) continue;
 
             Marks markEntity = marksRepository
