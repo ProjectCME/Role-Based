@@ -25,40 +25,50 @@ public class TeacherService {
     @Autowired
     private TeacherSubjectRepository teacherSubjectRepository;
 
-    public List<Subject> getAssignedSubjects(String teacherIdString) {
-        // Parse to Integer
+    //find teacher by Unique ID
+    private User getTeacherById(String teacherIdString) {
         Integer teacherId = Integer.parseInt(teacherIdString);
+        return Optional.ofNullable(userRepository.findByUniqueId(teacherId))
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with ID: " + teacherId));
+    }
 
-        User teacher = Optional.ofNullable(userRepository.findByUniqueId(teacherId))
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
-
+    public List<Subject> getAssignedSubjects(String teacherIdString) {
+        User teacher = getTeacherById(teacherIdString);
         return teacherSubjectRepository.findByTeacher(teacher).stream()
                 .map(TeacherSubject::getSubject)
                 .collect(Collectors.toList());
     }
 
-    // CSV Upload Logic
+    //CSV Uploads
     @Transactional
-    public void saveMarks(MultipartFile file, Long subjectId, String examTypeStr, String teacherEmail)
+    public void saveMarks(MultipartFile file, Long subjectId, String examTypeStr, String teacherIdString)
             throws IOException {
 
-        // Find teacher by email (NOT uniqueId)
-        User teacher = userRepository.findByEmail(teacherEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+        // Logic updated to use ID, comment preserved
+        User teacher = getTeacherById(teacherIdString);
 
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
+        
+        //This part ensures that the correct teacher is uploading marks for their assigned subjects only (Rogue Teacher Prevention)
+        boolean isAssigned = teacherSubjectRepository.findByTeacher(teacher).stream().anyMatch(ts -> ts.getSubject().getId().equals(subjectId));
 
+        if (!isAssigned) {
+            throw new IllegalArgumentException("Access Denied: You are not assigned to subject " + subject.getSubjectName());
+        }
+        
         Marks.ExamType examType = Marks.ExamType.valueOf(examTypeStr);
         List<CSVHelper.CsvRecord> records = CSVHelper.parse(file);
-
+        Set<Integer> processedStudentIds = new HashSet<>();
         for (CSVHelper.CsvRecord record : records) {
+            User student = Optional.ofNullable(userRepository.findByUniqueId(record.studentUniqueId)).orElse(null);
 
-            User student = Optional.ofNullable(userRepository.findByUniqueId(record.studentUniqueId))
-                    .orElse(null);
+            if (processedStudentIds.contains(record.studentUniqueId)) {continue;} //Skips Duplicate in the same file
+            processedStudentIds.add(record.studentUniqueId);
 
-            if (student == null)
-                continue; // for invalid student id
+            if (record.marks != null && (record.marks < 0 || record.marks > 100)) {
+                throw new IllegalArgumentException("Invalid marks for Student ID " + record.studentUniqueId + ": " + record.marks);}
+            if (student == null) continue;
 
             Marks markEntity = marksRepository
                     .findByStudentAndSubjectAndExamType(student, subject, examType)
@@ -76,23 +86,21 @@ public class TeacherService {
         }
     }
 
-    // Fetch assigned subjects
-    public List<Subject> getAssignedSubjectsByEmail(String teacherEmail) {
-        User teacher = userRepository.findByEmail(teacherEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+    //Fetch assigned subjects
+    public List<Subject> getAssignedSubjectsById(String teacherIdString) {
+        User teacher = getTeacherById(teacherIdString);
         return teacherSubjectRepository.findByTeacher(teacher).stream()
                 .map(TeacherSubject::getSubject)
                 .collect(Collectors.toList());
     }
 
-    // Creating Views
+    //Creating Views
     public List<MarkDto> getTeacherViewData(String teacherIdString, Integer year, Integer semester, Long subjectId) {
-        Integer teacherId = Integer.parseInt(teacherIdString);
-
-        User teacher = Optional.ofNullable(userRepository.findByUniqueId(teacherId))
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+        User teacher = getTeacherById(teacherIdString);
+        
         List<Marks> rawMarks = marksRepository.findByTeacher(teacher);
-        // Filter Logic
+
+        //Filter Logic
         if (subjectId != null) {
             rawMarks = rawMarks.stream().filter(m -> m.getSubject().getId().equals(subjectId)).toList();
         }
@@ -110,8 +118,7 @@ public class TeacherService {
         List<MarkDto> response = new ArrayList<>();
 
         for (List<Marks> entry : grouped.values()) {
-            if (entry.isEmpty())
-                continue;
+            if (entry.isEmpty()) continue;
 
             Marks ref = entry.get(0);
             MarkDto dto = new MarkDto();
@@ -121,15 +128,12 @@ public class TeacherService {
 
             for (Marks m : entry) {
                 String val = (m.getMarks() == null) ? "Absent" : String.valueOf(m.getMarks());
-
-                if (m.getExamType() == Marks.ExamType.IA1)
-                    ia1 = val;
-                else if (m.getExamType() == Marks.ExamType.IA2)
-                    ia2 = val;
-                else if (m.getExamType() == Marks.ExamType.IA3)
-                    ia3 = val;
-                else if (m.getExamType() == Marks.ExamType.SPECIAL)
-                    special = val;
+                switch(m.getExamType()) {
+                    case IA1 -> ia1 = val;
+                    case IA2 -> ia2 = val;
+                    case IA3 -> ia3 = val;
+                    case SPECIAL -> special = val;
+                }
             }
 
             dto.setIa1(ia1);
