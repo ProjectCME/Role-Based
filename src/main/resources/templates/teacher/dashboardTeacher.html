@@ -8,6 +8,22 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
   </head>
+
+  <!-- adding the success or error mssg on upload marks -->
+  <script th:inline="javascript">
+    window.onload = function () {
+      var msg = /*[[${message}]]*/ null;
+      if (msg !== null) {
+        alert(msg);
+      }
+
+      var err = /*[[${error}]]*/ null;
+      if (err !== null) {
+        alert(err);
+      }
+    };
+  </script>
+
   <body>
     <header class="header">
       <div class="logo">Teacher Portal</div>
