@@ -25,7 +25,7 @@ public class TeacherService {
     @Autowired
     private TeacherSubjectRepository teacherSubjectRepository;
 
-    // Helper to find teacher by Unique ID (Single Source of Truth)
+    //find teacher by Unique ID
     private User getTeacherById(String teacherIdString) {
         Integer teacherId = Integer.parseInt(teacherIdString);
         return Optional.ofNullable(userRepository.findByUniqueId(teacherId))
@@ -39,7 +39,7 @@ public class TeacherService {
                 .collect(Collectors.toList());
     }
 
-    // CSV Upload Logic
+    //CSV Uploads
     @Transactional
     public void saveMarks(MultipartFile file, Long subjectId, String examTypeStr, String teacherIdString)
             throws IOException {
@@ -75,23 +75,21 @@ public class TeacherService {
         }
     }
 
-    // Fetch assigned subjects
+    //Fetch assigned subjects
     public List<Subject> getAssignedSubjectsById(String teacherIdString) {
-        // Logic updated to use ID, comment preserved
         User teacher = getTeacherById(teacherIdString);
         return teacherSubjectRepository.findByTeacher(teacher).stream()
                 .map(TeacherSubject::getSubject)
                 .collect(Collectors.toList());
     }
 
-    // Creating Views
+    //Creating Views
     public List<MarkDto> getTeacherViewData(String teacherIdString, Integer year, Integer semester, Long subjectId) {
-        // Logic updated to use ID, comment preserved
         User teacher = getTeacherById(teacherIdString);
         
         List<Marks> rawMarks = marksRepository.findByTeacher(teacher);
 
-        // Filter Logic
+        //Filter Logic
         if (subjectId != null) {
             rawMarks = rawMarks.stream().filter(m -> m.getSubject().getId().equals(subjectId)).toList();
         }
