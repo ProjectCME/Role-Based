@@ -55,21 +55,21 @@ public class StudentService {
                         } else {
                             ia1 = String.valueOf(m.getMarks());
                             iaValues.add(m.getMarks());
-                        }
+                        }break;
                     case IA2:
                         if(marks==null){
                             ia2 = "Absent";
                         } else {
                             ia2 = String.valueOf(m.getMarks());
                             iaValues.add(m.getMarks());
-                        }
+                        }break;
                     case IA3:
                         if(marks==null){
                             ia3 = "Absent";
                         } else {
                             ia3 = String.valueOf(m.getMarks());
                             iaValues.add(m.getMarks());
-                        }
+                        }break;
                     case SPECIAL:
                         if(marks==null){
                             special = "Absent";
@@ -77,7 +77,7 @@ public class StudentService {
                         } else {
                             special = String.valueOf(m.getMarks());
                             iaValues.add(m.getMarks());
-                        }
+                        }break;
                         
                 }
             }
