@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
@@ -29,39 +30,48 @@ public class TeacherController {
         return roleObj != null && "ADMIN".equals(roleObj.toString());
     }
 
-    private void loadSubjects(Model model, Principal principal, HttpServletRequest request) {
-        List<Subject> subjects = Collections.emptyList();
+    //Get Teacher ID from principal/session
+    private String getTeacherId(Principal principal, HttpServletRequest request) {
+        //Try Principal
+        if (principal != null) {
+            return principal.getName(); 
+        }
+        //Try Session
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object idObj = session.getAttribute("studentUniqueId"); 
+            if (idObj != null) {
+                return String.valueOf(idObj);
+            }
+        }
+        return null;
+    }
 
+    private void loadSubjects(Model model, String teacherId) {
+        List<Subject> subjects = Collections.emptyList();
         try {
-            if (principal != null) {
-                subjects = teacherService.getAssignedSubjects(principal.getName());
-            } else if (request != null) {
-                Object emailObj = request.getSession(false) != null
-                        ? request.getSession(false).getAttribute("userEmail")
-                        : null;
-                if (emailObj instanceof String) {
-                    // service method should resolve subjects by teacher email
-                    subjects = teacherService.getAssignedSubjectsByEmail((String) emailObj);
-                }
+            if (teacherId != null) {
+                subjects = teacherService.getAssignedSubjects(teacherId);
             }
         } catch (Exception ignored) {
             subjects = Collections.emptyList();
         }
-
         model.addAttribute("teacherSubjects", subjects);
     }
 
-    // 1. Dashboard Page Load
+    //Dashboard Page Load
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal, HttpServletRequest request) {
         if (isAdmin(request)) {
             return "redirect:/admin/teacher-overview?adminAccess=true";
         }
-        loadSubjects(model, principal, request);
+        
+        String teacherId = getTeacherId(principal, request);
+        loadSubjects(model, teacherId);
         return "teacher/dashboardTeacher";
     }
 
-    // 2. Handle CSV Upload (marks)
+    //Handle CSV Upload (marks)
     @PostMapping("/upload-marks")
     public String uploadMarks(
             @RequestParam("file") MultipartFile file,
@@ -70,27 +80,25 @@ public class TeacherController {
             Model model,
             Principal principal,
             HttpServletRequest request) {
+        
         if (isAdmin(request)) {
             return "redirect:/admin/teacher-overview?adminAccess=true";
         }
-        String teacherIdentifier = null;
-        if (principal != null)
-            teacherIdentifier = principal.getName();
-        else if (request.getSession(false) != null)
-            teacherIdentifier = (String) request.getSession(false).getAttribute("userEmail");
+
+        String teacherId = getTeacherId(principal, request);
 
         try {
-            teacherService.saveMarks(file, subjectId, examType, teacherIdentifier);
+            teacherService.saveMarks(file, subjectId, examType, teacherId);
             model.addAttribute("message", "Marks uploaded successfully!");
         } catch (Exception e) {
             model.addAttribute("error", "Error uploading file: " + e.getMessage());
         }
 
-        loadSubjects(model, principal, request);
+        loadSubjects(model, teacherId);
         return "teacher/dashboardTeacher";
     }
 
-    // 3. Handle View/Search Marks
+    //Handle View/Search Marks
     @GetMapping("/view-marks")
     public String viewMarks(
             @RequestParam(required = false) Integer year,
@@ -99,23 +107,21 @@ public class TeacherController {
             Model model,
             Principal principal,
             HttpServletRequest request) {
+        
         if (isAdmin(request)) {
             return "redirect:/admin/teacher-overview?adminAccess=true";
         }
-        String teacherIdentifier = null;
-        if (principal != null)
-            teacherIdentifier = principal.getName();
-        else if (request.getSession(false) != null)
-            teacherIdentifier = (String) request.getSession(false).getAttribute("userEmail");
+
+        String teacherId = getTeacherId(principal, request);
 
         try {
             model.addAttribute("studentList",
-                    teacherService.getTeacherViewData(teacherIdentifier, year, semester, subjectId));
+                    teacherService.getTeacherViewData(teacherId, year, semester, subjectId));
         } catch (Exception e) {
             model.addAttribute("error", "Error loading marks: " + e.getMessage());
         }
 
-        loadSubjects(model, principal, request);
+        loadSubjects(model, teacherId);
         return "teacher/dashboardTeacher";
     }
 }
