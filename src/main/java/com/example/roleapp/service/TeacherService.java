@@ -61,13 +61,14 @@ public class TeacherService {
         List<CSVHelper.CsvRecord> records = CSVHelper.parse(file);
         Set<Integer> processedStudentIds = new HashSet<>();
         for (CSVHelper.CsvRecord record : records) {
-            User student = Optional.ofNullable(userRepository.findByUniqueId(record.studentUniqueId)).orElse(null);
-
             if (processedStudentIds.contains(record.studentUniqueId)) {continue;} //Skips Duplicate in the same file
             processedStudentIds.add(record.studentUniqueId);
 
+            //Validating marks range
             if (record.marks != null && (record.marks < 0 || record.marks > 100)) {
                 throw new IllegalArgumentException("Invalid marks for Student ID " + record.studentUniqueId + ": " + record.marks);}
+            
+            User student = Optional.ofNullable(userRepository.findByUniqueId(record.studentUniqueId)).orElse(null);
             if (student == null) continue;
 
             Marks markEntity = marksRepository
