@@ -4,9 +4,11 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.Random;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,11 +37,12 @@ public class EmailOtpService {
         if (userOpt.isEmpty()) {
             throw new IllegalArgumentException("User not found with email: " + email);
         }
+
         User user = userOpt.get();
 
         // Generate 6-digit OTP
         String otp = String.format("%06d", new Random().nextInt(999999));
-        String hashedOtp = BCrypt.hashpw(otp, BCrypt.gensalt());
+        String hashedOtp = sha256Hex(otp);
 
         // Create OtpEvent
         OtpEvent otpEvent = new OtpEvent();
@@ -75,16 +78,30 @@ public class EmailOtpService {
         }
         OtpEvent otpEvent = otpEventOpt.get();
 
-        // if (!otpEvent.getOtpCode().equals(otp) || Instant.now().toEpochMilli() > otpEvent.getExpiryTime()) {
-        //     return false;
-        // }
-        boolean match = BCrypt.checkpw(otp, otpEvent.getOtpCode());
-        if (!match) return false;
-        
-        // Mark as verified
+        boolean match = otp.equals(otpEvent.getOtpCode());
+        if (!match)
+            return false;
+
         otpEvent.setStatus(OtpEvent.Status.VERIFIED);
         otpEventRepository.save(otpEvent);
 
         return true;
+    }
+
+    private static String sha256Hex(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder(2 * hash.length);
+            for (byte b : hash) {
+                String h = Integer.toHexString(0xff & b);
+                if (h.length() == 1)
+                    hex.append('0');
+                hex.append(h);
+            }
+            return hex.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not available", e);
+        }
     }
 }
