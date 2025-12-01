@@ -34,7 +34,8 @@
     </header>
 
     <div class="container">
-      <div id="main-menu" class="dashboard-section">
+      <div id="main-menu" class="dashboard-section"
+        th:style="${activeSection == 'view' or activeSection == 'upload'} ? 'display: none;' : 'display: block;'">
         <h2>TEACHER DASHBOARD</h2>
         <div class="card-container">
           <div class="card" onclick="showSection('upload-section')">
@@ -50,7 +51,8 @@
         </div>
       </div>
 
-      <div id="upload-section" class="dashboard-section" style="display: none">
+      <div id="upload-section" class="dashboard-section" style="display: none"
+        th:style="${activeSection == 'upload'} ? 'display: block;' : 'display: none;'">
         <div class="section-header">
           <button class="back-btn" onclick="showSection('main-menu')">
             ← Back
@@ -126,7 +128,8 @@
         </div>
       </div>
 
-      <div id="view-section" class="dashboard-section" style="display: none">
+      <div id="view-section" class="dashboard-section"
+        th:style="${activeSection == 'view'} ? 'display: block;' : 'display: none;'">
         <div class="section-header">
           <button class="back-btn" onclick="showSection('main-menu')">
             ← Back
