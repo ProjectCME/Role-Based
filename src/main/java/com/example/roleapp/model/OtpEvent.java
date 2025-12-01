@@ -17,7 +17,9 @@ public class OtpEvent {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
+    @Column(name = "otp_code", length = 100, nullable = false) // <-- IMPORTANT
     private String otpCode;
+
 
     @Enumerated(EnumType.STRING)
     private Purpose purpose;
