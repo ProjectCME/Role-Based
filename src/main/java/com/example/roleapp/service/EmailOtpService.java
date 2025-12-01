@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,11 +39,12 @@ public class EmailOtpService {
 
         // Generate 6-digit OTP
         String otp = String.format("%06d", new Random().nextInt(999999));
+        String hashedOtp = BCrypt.hashpw(otp, BCrypt.gensalt());
 
         // Create OtpEvent
         OtpEvent otpEvent = new OtpEvent();
         otpEvent.setUser(user);
-        otpEvent.setOtpCode(otp);
+        otpEvent.setOtpCode(hashedOtp);
         otpEvent.setPurpose(purpose);
         otpEvent.setStatus(OtpEvent.Status.PENDING);
         otpEvent.setCreatedAt(Instant.now().toEpochMilli());
@@ -73,10 +75,12 @@ public class EmailOtpService {
         }
         OtpEvent otpEvent = otpEventOpt.get();
 
-        if (!otpEvent.getOtpCode().equals(otp) || Instant.now().toEpochMilli() > otpEvent.getExpiryTime()) {
-            return false;
-        }
-
+        // if (!otpEvent.getOtpCode().equals(otp) || Instant.now().toEpochMilli() > otpEvent.getExpiryTime()) {
+        //     return false;
+        // }
+        boolean match = BCrypt.checkpw(otp, otpEvent.getOtpCode());
+        if (!match) return false;
+        
         // Mark as verified
         otpEvent.setStatus(OtpEvent.Status.VERIFIED);
         otpEventRepository.save(otpEvent);
