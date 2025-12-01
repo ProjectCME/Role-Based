@@ -96,6 +96,7 @@ public class TeacherController {
         }
 
         loadSubjects(model, teacherId);
+        model.addAttribute("activeSection", "upload");
         return "teacher/dashboardTeacher";
     }
 
@@ -123,6 +124,7 @@ public class TeacherController {
         }
 
         loadSubjects(model, teacherId);
+        model.addAttribute("activeSection", "view");
         return "teacher/dashboardTeacher";
     }
 }
