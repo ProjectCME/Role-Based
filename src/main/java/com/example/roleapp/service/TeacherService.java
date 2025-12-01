@@ -25,7 +25,7 @@ public class TeacherService {
     @Autowired
     private TeacherSubjectRepository teacherSubjectRepository;
 
-    //find teacher by Unique ID
+    // find teacher by Unique ID
     private User getTeacherById(String teacherIdString) {
         Integer teacherId = Integer.parseInt(teacherIdString);
         return Optional.ofNullable(userRepository.findByUniqueId(teacherId))
@@ -39,7 +39,7 @@ public class TeacherService {
                 .collect(Collectors.toList());
     }
 
-    //CSV Uploads
+    // CSV Uploads
     @Transactional
     public void saveMarks(MultipartFile file, Long subjectId, String examTypeStr, String teacherIdString)
             throws IOException {
@@ -49,27 +49,35 @@ public class TeacherService {
 
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
-        
-        //This part ensures that the correct teacher is uploading marks for their assigned subjects only (Rogue Teacher Prevention)
-        boolean isAssigned = teacherSubjectRepository.findByTeacher(teacher).stream().anyMatch(ts -> ts.getSubject().getId().equals(subjectId));
+
+        // This part ensures that the correct teacher is uploading marks for their
+        // assigned subjects only (Rogue Teacher Prevention)
+        boolean isAssigned = teacherSubjectRepository.findByTeacher(teacher).stream()
+                .anyMatch(ts -> ts.getSubject().getId().equals(subjectId));
 
         if (!isAssigned) {
-            throw new IllegalArgumentException("Access Denied: You are not assigned to subject " + subject.getSubjectName());
+            throw new IllegalArgumentException(
+                    "Access Denied: You are not assigned to subject " + subject.getSubjectName());
         }
-        
+
         Marks.ExamType examType = Marks.ExamType.valueOf(examTypeStr);
         List<CSVHelper.CsvRecord> records = CSVHelper.parse(file);
         Set<Integer> processedStudentIds = new HashSet<>();
         for (CSVHelper.CsvRecord record : records) {
-            if (processedStudentIds.contains(record.studentUniqueId)) {continue;} //Skips Duplicate in the same file
+            if (processedStudentIds.contains(record.studentUniqueId)) {
+                continue;
+            } // Skips Duplicate in the same file
             processedStudentIds.add(record.studentUniqueId);
 
-            //Validating marks range
+            // Validating marks range
             if (record.marks != null && (record.marks < 0 || record.marks > 100)) {
-                throw new IllegalArgumentException("Invalid marks for Student ID " + record.studentUniqueId + ": " + record.marks);}
-            
+                throw new IllegalArgumentException(
+                        "Invalid marks for Student ID " + record.studentUniqueId + ": " + record.marks);
+            }
+
             User student = Optional.ofNullable(userRepository.findByUniqueId(record.studentUniqueId)).orElse(null);
-            if (student == null) continue;
+            if (student == null)
+                continue;
 
             Marks markEntity = marksRepository
                     .findByStudentAndSubjectAndExamType(student, subject, examType)
@@ -87,7 +95,7 @@ public class TeacherService {
         }
     }
 
-    //Fetch assigned subjects
+    // Fetch assigned subjects
     public List<Subject> getAssignedSubjectsById(String teacherIdString) {
         User teacher = getTeacherById(teacherIdString);
         return teacherSubjectRepository.findByTeacher(teacher).stream()
@@ -95,13 +103,46 @@ public class TeacherService {
                 .collect(Collectors.toList());
     }
 
-    //Creating Views
+    private Double calculateBestTwoAvg(String ia1, String ia2, String ia3, String special) {
+        List<Integer> marks = new ArrayList<>();
+
+        try {
+            if (ia1 != null && !ia1.equalsIgnoreCase("Absent"))
+                marks.add(Integer.parseInt(ia1));
+        } catch (Exception ignored) {
+        }
+        try {
+            if (ia2 != null && !ia2.equalsIgnoreCase("Absent"))
+                marks.add(Integer.parseInt(ia2));
+        } catch (Exception ignored) {
+        }
+        try {
+            if (ia3 != null && !ia3.equalsIgnoreCase("Absent"))
+                marks.add(Integer.parseInt(ia3));
+        } catch (Exception ignored) {
+        }
+        try {
+            if (special != null && !special.equalsIgnoreCase("Absent"))
+                marks.add(Integer.parseInt(special));
+        } catch (Exception ignored) {
+        }
+
+        if (marks.size() < 2)
+            return null; // indicate "NA"
+
+        marks.sort(Collections.reverseOrder()); // best first
+        double avg = (marks.get(0) + marks.get(1)) / 2.0;
+        // Optionally round to 2 decimals
+        return Math.round(avg * 100.0) / 100.0;
+    }
+
+    // Creating Views
     public List<MarkDto> getTeacherViewData(String teacherIdString, Integer year, Integer semester, Long subjectId) {
         User teacher = getTeacherById(teacherIdString);
-        
+
         List<Marks> rawMarks = marksRepository.findByTeacher(teacher);
 
-        //Filter Logic
+        // Filter Logic
         if (subjectId != null) {
             rawMarks = rawMarks.stream().filter(m -> m.getSubject().getId().equals(subjectId)).toList();
         }
@@ -119,7 +160,8 @@ public class TeacherService {
         List<MarkDto> response = new ArrayList<>();
 
         for (List<Marks> entry : grouped.values()) {
-            if (entry.isEmpty()) continue;
+            if (entry.isEmpty())
+                continue;
 
             Marks ref = entry.get(0);
             MarkDto dto = new MarkDto();
@@ -129,7 +171,7 @@ public class TeacherService {
 
             for (Marks m : entry) {
                 String val = (m.getMarks() == null) ? "Absent" : String.valueOf(m.getMarks());
-                switch(m.getExamType()) {
+                switch (m.getExamType()) {
                     case IA1 -> ia1 = val;
                     case IA2 -> ia2 = val;
                     case IA3 -> ia3 = val;
@@ -141,8 +183,8 @@ public class TeacherService {
             dto.setIa2(ia2);
             dto.setIa3(ia3);
             dto.setSpecial(special);
-            dto.setBestTwoAvg(null);
-
+            Double bestTwo = calculateBestTwoAvg(ia1, ia2, ia3, special);
+            dto.setBestTwoAvg(bestTwo);
             response.add(dto);
         }
         return response;

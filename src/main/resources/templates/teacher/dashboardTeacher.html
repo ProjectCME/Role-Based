@@ -34,8 +34,11 @@
     </header>
 
     <div class="container">
-      <div id="main-menu" class="dashboard-section"
-        th:style="${activeSection == 'view' or activeSection == 'upload'} ? 'display: none;' : 'display: block;'">
+      <div
+        id="main-menu"
+        class="dashboard-section"
+        th:style="${activeSection == 'view' or activeSection == 'upload'} ? 'display: none;' : 'display: block;'"
+      >
         <h2>TEACHER DASHBOARD</h2>
         <div class="card-container">
           <div class="card" onclick="showSection('upload-section')">
@@ -51,8 +54,12 @@
         </div>
       </div>
 
-      <div id="upload-section" class="dashboard-section" style="display: none"
-        th:style="${activeSection == 'upload'} ? 'display: block;' : 'display: none;'">
+      <div
+        id="upload-section"
+        class="dashboard-section"
+        style="display: none"
+        th:style="${activeSection == 'upload'} ? 'display: block;' : 'display: none;'"
+      >
         <div class="section-header">
           <button class="back-btn" onclick="showSection('main-menu')">
             ← Back
@@ -128,8 +135,11 @@
         </div>
       </div>
 
-      <div id="view-section" class="dashboard-section"
-        th:style="${activeSection == 'view'} ? 'display: block;' : 'display: none;'">
+      <div
+        id="view-section"
+        class="dashboard-section"
+        th:style="${activeSection == 'view'} ? 'display: block;' : 'display: none;'"
+      >
         <div class="section-header">
           <button class="back-btn" onclick="showSection('main-menu')">
             ← Back
@@ -192,7 +202,13 @@
                 <td th:text="${mark.ia2}"></td>
                 <td th:text="${mark.ia3}"></td>
                 <td th:text="${mark.special}"></td>
-                <td th:text="${mark.bestTwoAvg}"></td>
+                <td>
+                  <span
+                    th:if="${mark.bestTwoAvg != null}"
+                    th:text="${mark.bestTwoAvg}"
+                  ></span>
+                  <span th:unless="${mark.bestTwoAvg != null}">NA</span>
+                </td>
               </tr>
               <tr th:if="${studentList == null or studentList.isEmpty()}">
                 <td colspan="6" style="text-align: center">
